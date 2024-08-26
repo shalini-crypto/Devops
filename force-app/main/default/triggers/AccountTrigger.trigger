@@ -1,8 +1,14 @@
-trigger AccountTrigger on Account (before insert, before update) {
+trigger AccountTrigger on Account (before insert, before update, after insert) {
     if(trigger.isInsert){
-
-    }else if(trigger.isUpdate) {
+        AccountTriggerHandler handler = new AccountTriggerHandler();
+        if (trigger.isBefore) {
+            handler.beforeInsert(trigger.new);
+        }
+        if (trigger.isAfter) {
+            handler.afterInsert(trigger.new);
+        }
+    // }else if(trigger.isUpdate) {
     
+    // }
     }
-
 }
