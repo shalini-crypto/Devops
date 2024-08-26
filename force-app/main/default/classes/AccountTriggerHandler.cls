@@ -3,15 +3,17 @@ public inherited sharing class AccountTriggerHandler {
 
     // }
 
-    public void beforeInsert(List<Account> accList){
+    public void updateRating(List<Account> accList){
         for(Account acc :accList){
             System.debug('Inside AccountTriggerHandler acc');
-            if(acc.NumberOfEmployees == NULL){
-                acc.NumberOfEmployees = 1;
+            if(acc.Industry == 'Media' || acc.Industry == 'Energy'){
+                acc.Rating = 'Hot';
             }
             System.debug('Inside AccountTriggerHandler acc');
         }
     }
+
+    
     public void afterInsert(List<Account> accList){
         List<Contact> conList = new List<Contact>();
         for(Account acc : accList){
@@ -26,6 +28,22 @@ public inherited sharing class AccountTriggerHandler {
         System.debug('Inside AccountTriggerHandler conList'+conList);
         if(conList.size()>0){
             insert conList;
+        }
+    }
+
+    public  void createRelatedOpportunity(List<Account> accList){
+        List<Opportunity> oppoList = new List<Opportunity>();
+        for (Account acc : accList) {
+            Opportunity oppo = new Opportunity();
+
+            oppo.Name = acc.Name;
+            oppo.AccountId = acc.Id;
+            oppo.StageName = 'Prospecting';
+            oppo.CloseDate = System.today();
+            oppoList.add(oppo); 
+        }
+        if (!oppoList.isEmpty()) {
+            insert oppoList;
         }
     }
     

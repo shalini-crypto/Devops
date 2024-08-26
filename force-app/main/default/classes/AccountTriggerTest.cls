@@ -1,24 +1,52 @@
 @isTest
+
 private class AccountTriggerTest {
 
     @isTest
-    private static void accountInsertTest() {
+    private static void updateRatingTest() {
         // Test data setup
-        Account acc = new Account();
-        acc.Name = 'MyTestAcc';
+        List<Account> accList = new List<Account>();
+
+        for (Integer i=1; i<=5; i++) {
+            Account acc = new Account();
+            acc.Name = 'MyTestAcc'+i;
+            acc.Industry = 'Energy';
+            accList.add(acc);
+        }
         // Actual test
         Test.startTest();
-            insert acc;
+            insert accList;
         Test.stopTest();
 
         // Asserts
-        Account accRecord = [SELECT id, NumberOfEmployees 
-                        FROM Account WHERE id =:acc.Id ];
+        List<Account> updatedAccount = [SELECT id, Rating 
+                        FROM Account WHERE id =:accList[0].Id ];
     
-        System.assertEquals(1, accRecord.NumberOfEmployees);
-        List<Contact> conList = [SELECT id, Name 
-                        FROM Contact WHERE AccountId =:acc.Id ];
-        System.assert(conList.size()>0);
+        System.assertEquals( 'Hot', updatedAccount[0].Rating);
     }
 
+    @isTest
+    private static void createRelatedOppTest() {
+
+        //create data
+        List<Account> accList = new List<Account>();
+        for (Integer i = 0; i < 5; i++){
+            
+            Account acc = new Account();
+            acc.Name = 'TestAcc' + i;
+            accList.add(acc);   
+        }
+        Test.startTest();
+        insert accList;
+        Test.stopTest();
+
+
+        // Actual test
+        List<Opportunity> oppList = [SELECT id
+                                        FROM Opportunity
+                                        WHERE accountId =: accList[0].id];
+
+        // Asserts
+        System.assertEquals(oppList!= null,'Opportuinity was not created');
+    }
 }
